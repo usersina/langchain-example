@@ -1,0 +1,33 @@
+@baseUrl = http://localhost:5000
+
+### GET /api
+GET {{baseUrl}}/api
+Content-Type: application/json
+
+### POST /api/generate
+POST {{baseUrl}}/api/generate?temperature=0.9&top_p=1&max_length=100
+Content-Type: application/json
+
+{
+    "prompt": "What would be a good company name a company that makes colorful socks?"
+}
+
+# {
+#     "prompt": "Write me a song about sparkling water."
+# }
+
+### POST /api/sql/raw
+POST {{baseUrl}}/api/sql/raw
+Content-Type: application/json
+
+{
+    "prompt": "How many products do we have?"
+}
+
+### POST /api/sql/agent
+POST {{baseUrl}}/api/sql/agent
+Content-Type: application/json
+
+{
+    "prompt": "How many products do we have?"
+}
