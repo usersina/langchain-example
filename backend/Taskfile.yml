@@ -1,0 +1,14 @@
+# https://taskfile.dev
+
+version: "3"
+
+silent: true
+
+tasks:
+  default:
+    desc: "List available tasks"
+    cmd: task --list
+
+  dev:
+    desc: "Run the server with hot reload enabled"
+    cmd: flask --app src/main.py --debug run
