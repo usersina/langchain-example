@@ -1,0 +1,25 @@
+# https://taskfile.dev
+
+version: "3"
+
+silent: true
+
+tasks:
+  default:
+    desc: "List available tasks"
+    cmd: task --list
+
+  up:
+    desc: "Start the compose stack"
+    cmds:
+      - docker-compose -f compose/mariadb-stack-compose.yml up -d
+
+  down:
+    desc: "Stop the compose stack"
+    cmds:
+      - docker-compose -f compose/mariadb-stack-compose.yml down
+
+  delete:
+    desc: "Delete the compose stack"
+    cmds:
+      - docker-compose -f compose/mariadb-stack-compose.yml down -v

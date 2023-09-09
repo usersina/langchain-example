@@ -1,0 +1,46 @@
+version: "3"
+name: mariadb-stack
+
+services:
+  mariadb:
+    image: mariadb:10
+    container_name: mariadb
+    environment:
+      - MARIADB_ROOT_PASSWORD=root
+    volumes:
+      - mariadb-vol:/var/lib/mysql
+      - ./init/mysql:/docker-entrypoint-initdb.d
+    networks:
+      - mariadb-net
+      - shared-net
+    ports:
+      - 3316:3306
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  phpmyadmin:
+    image: phpmyadmin:5.2.1
+    container_name: phpmyadmin
+    depends_on:
+      - mariadb
+    environment:
+      - PMA_ARBITRARY=1
+      - PMA_PMADB=phpmyadmin
+    networks:
+      - mariadb-net
+    ports:
+      - 8080:80
+
+volumes:
+  mariadb-vol:
+    driver: local
+
+networks:
+  mariadb-net:
+    driver: bridge
+  shared-net:
+    # In case database is to be used in other compose stacks
+    name: shared_network
+    driver: bridge
