@@ -1,10 +1,13 @@
+import os
 from typing import TypedDict
 
 from flask import Blueprint, request
 from langchain.callbacks import get_openai_callback
 from langchain.llms import OpenAI
 
-page = Blueprint("generate", __name__)
+from atypes.error import AppError
+
+page = Blueprint(os.path.splitext(os.path.basename(__file__))[0], __name__)
 
 
 # Define the expected input type
@@ -18,13 +21,8 @@ class Output(TypedDict):
     tokens: int
 
 
-# Define the expected error type
-class Error(TypedDict):
-    error: str
-
-
 @page.route("/", methods=["POST"])
-def generate() -> Output | tuple[Error, int]:
+def generate() -> Output | tuple[AppError, int]:
     """
     Given a prompt, generate some text.
     """

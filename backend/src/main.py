@@ -2,6 +2,7 @@ from dotenv import load_dotenv
 from flask import Flask
 from flask_cors import CORS
 
+from routes.chat import page as chatRoute
 from routes.generate import page as generateRoute
 from routes.index import page as indexRoute
 from routes.querySql import page as querySqlRoute
@@ -19,6 +20,7 @@ CORS(app)
 
 app.register_blueprint(indexRoute, url_prefix="/api")
 app.register_blueprint(generateRoute, url_prefix="/api/generate")
+app.register_blueprint(chatRoute, url_prefix="/api/chat")
 app.register_blueprint(querySqlRoute, url_prefix="/api/sql")
 
 # Execute only if run as a script

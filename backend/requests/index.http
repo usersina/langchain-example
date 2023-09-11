@@ -12,6 +12,18 @@ Content-Type: application/json
     "prompt": "What would be a good company name a company that makes colorful socks?"
 }
 
+### POST /api/chat
+POST {{baseUrl}}/api/chat
+Content-Type: application/json
+
+{
+    "prompt": "Who am I? Who are you?",
+    "messages": [
+        { "role": "user", "content": "Hello, I am Mariocarter. Who are you?" },
+        { "role": "assistant", "content": "Good day. I am your virtual assistant Lilith. How can I assist you today?" }
+    ]
+}
+
 # {
 #     "prompt": "Write me a song about sparkling water."
 # }

@@ -1,6 +1,8 @@
+import os
+
 from flask import Blueprint
 
-page = Blueprint("index", __name__)
+page = Blueprint(os.path.splitext(os.path.basename(__file__))[0], __name__)
 
 
 @page.route("/")

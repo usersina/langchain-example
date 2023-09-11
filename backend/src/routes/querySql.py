@@ -1,3 +1,4 @@
+import os
 from typing import TypedDict
 
 from flask import Blueprint, request
@@ -10,7 +11,9 @@ from langchain.chat_models import ChatOpenAI
 from langchain.llms import OpenAI
 from langchain.utilities import SQLDatabase
 
-page = Blueprint("sql", __name__)
+from atypes.error import AppError
+
+page = Blueprint(os.path.splitext(os.path.basename(__file__))[0], __name__)
 
 
 # Define the expected input type
@@ -25,13 +28,8 @@ class Output(TypedDict):
     tokens: int
 
 
-# Define the expected error type
-class Error(TypedDict):
-    error: str
-
-
 @page.route("/raw", methods=["POST"])
-def sqlRaw() -> Output | tuple[Error, int]:
+def sqlRaw() -> Output | tuple[AppError, int]:
     """
     Given a prompt, generate a raw SQL query, execute it as is and return the results.
     The prompt should be a question that can be answered by the database.
@@ -59,7 +57,7 @@ def sqlRaw() -> Output | tuple[Error, int]:
 
 
 @page.route("/agent", methods=["POST"])
-def sqlAgent() -> Output | tuple[Error, int]:
+def sqlAgent() -> Output | tuple[AppError, int]:
     """
     Given a prompt, make observations by generating, running and then returning the results of a SQL query.
     The prompt should be a question that can be answered by the database.
