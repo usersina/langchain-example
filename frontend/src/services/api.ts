@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { Message } from '../types/message'
 
 const AXIOS_INSTANCE = axios.create({
   baseURL: import.meta.env.VITE_API_URL as string,
@@ -6,6 +7,30 @@ const AXIOS_INSTANCE = axios.create({
     'Content-Type': 'application/json',
   },
 })
+
+/**
+ * Send a message to the chatbot API.
+ *
+ * @param prompt the user's prompt
+ * @param history the chat history
+ * @returns the chatbot's response
+ */
+export const chat = async (
+  prompt: string,
+  history: Message[]
+): Promise<[string, number]> => {
+  const response = await AXIOS_INSTANCE.post<{
+    output: string
+    tokens: number
+  }>('/chat', {
+    prompt,
+    messages: history.filter(
+      (message) => message.role === 'user' || message.role === 'assistant'
+    ),
+  })
+  if (response.status !== 200) throw new Error(response.statusText)
+  return [response.data.output, response.data.tokens]
+}
 
 /**
  * Generate a response from the API given a prompt.

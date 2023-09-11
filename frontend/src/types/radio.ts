@@ -2,6 +2,10 @@ import { ElementType } from './utils'
 
 export const radioItems = [
   {
+    name: 'Chatbot',
+    value: 'chatbot',
+  },
+  {
     name: 'Generative',
     value: 'generate',
   },

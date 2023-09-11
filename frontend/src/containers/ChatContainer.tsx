@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import ChatComponent from '../components/ChatComponent'
-import { generate, sqlQueryAgent } from '../services/api'
+import { chat, generate, sqlQueryAgent } from '../services/api'
 import { Message } from '../types/message'
 import { RadioValue } from '../types/radio'
 
@@ -9,7 +9,7 @@ function ChatContainer() {
   const bottomDivRef = useRef<HTMLDivElement>(null)
 
   // State
-  const [type, setType] = useState<RadioValue>('generate')
+  const [type, setType] = useState<RadioValue>('chatbot')
   const [loading, setLoading] = useState(false)
   const [tokens, setTokens] = useState(0)
   const [messages, setMessages] = useState<Message[]>([
@@ -23,20 +23,35 @@ function ChatContainer() {
 
   // Handlers
   const handleSend = async (message: string) => {
-    setMessages((prev) => [...prev, { owner: 'human', text: message.trim() }])
+    setMessages((prev) => [...prev, { role: 'user', content: message.trim() }])
     setLoading(true)
     try {
       switch (type) {
+        case 'chatbot': {
+          const [result, tokens] = await chat(message, messages)
+          setTokens((prev) => prev + tokens)
+          setMessages((prev) => [
+            ...prev,
+            { role: 'assistant', content: result },
+          ])
+          break
+        }
         case 'generate': {
           const [result, tokens] = await generate(message)
           setTokens((prev) => prev + tokens)
-          setMessages((prev) => [...prev, { owner: 'ai', text: result }])
+          setMessages((prev) => [
+            ...prev,
+            { role: 'assistant', content: result },
+          ])
           break
         }
         case 'sql': {
           const [result, tokens] = await sqlQueryAgent(message)
           setTokens((prev) => prev + tokens)
-          setMessages((prev) => [...prev, { owner: 'ai', text: result }])
+          setMessages((prev) => [
+            ...prev,
+            { role: 'assistant', content: result },
+          ])
           break
         }
       }
@@ -44,8 +59,8 @@ function ChatContainer() {
       setMessages((prev) => [
         ...prev,
         {
-          owner: 'error',
-          text: `Something went wrong: ${(error as Error).message}`,
+          role: 'error',
+          content: `Something went wrong: ${(error as Error).message}`,
         },
       ])
     } finally {
