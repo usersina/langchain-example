@@ -5,7 +5,7 @@ from quart_cors import cors
 from routes.chat import page as chatRoute
 from routes.generate import page as generateRoute
 from routes.index import page as indexRoute
-from routes.querySql import page as querySqlRoute
+from routes.query_sql import page as querySqlRoute
 
 # Load environment variables
 load_dotenv(
