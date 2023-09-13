@@ -11,5 +11,5 @@ page = Blueprint(
 @page.route("/")
 async def home():
     return {
-        "message": "Welcome to the LangChain backend API!",
+        "message": "This is the debug endpoint!",
     }

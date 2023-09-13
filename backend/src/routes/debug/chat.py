@@ -10,7 +10,10 @@ from quart import Blueprint, current_app, request
 from atypes.error import AppError
 from atypes.message import Message
 
-page = Blueprint(os.path.splitext(os.path.basename(__file__))[0], __name__)
+page = Blueprint(
+    f"{os.path.dirname(__file__).replace(os.path.sep, '-')}-{os.path.splitext(os.path.basename(__file__))[0]}",
+    __name__,
+)
 
 
 # Define the expected input type
