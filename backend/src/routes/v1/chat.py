@@ -43,10 +43,15 @@ async def chat() -> Any | tuple[AppError, int]:
         )
 
         async def ask_question_async():
+            # Counting tokens is not yet available with streaming=True
+            # See https://github.com/langchain-ai/langchain/pull/9249
+            #
+            # with get_openai_callback() as cb:
             asyncio.create_task(conversation.apredict(input=prompt))
             async for i in handler.aiter():
                 yield i
             yield "[END]"
+            # yield str(cb.total_tokens)
 
         return ask_question_async(), {"Content-Type": "text/event-stream"}
 
