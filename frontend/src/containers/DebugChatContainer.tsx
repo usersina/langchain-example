@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import ChatComponent from '../components/DebugChatComponent'
+import DebugChatComponent from '../components/DebugChatComponent'
 import { chat, generate, sqlQueryAgent } from '../services/debug-api'
 import { Message } from '../types/message'
 import { RadioValue } from '../types/radio'
@@ -70,7 +70,7 @@ function ChatContainer() {
 
   // Render
   return (
-    <ChatComponent
+    <DebugChatComponent
       messages={messages}
       loading={loading}
       type={type}
