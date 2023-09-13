@@ -3,3 +3,17 @@
 ### GET /
 GET {{baseUrl}}
 Content-Type: application/json
+
+### GET /chat (returns a stream)
+# GET {{baseUrl}}/chat
+# Content-Type: application/json
+
+# {
+#     "prompt": "Who am I? Who are you?",
+#     "messages": [
+#         { "role": "user", "content": "Hello, I am Mariocarter. Who are you?" },
+#         { "role": "assistant", "content": "Good day. I am your virtual assistant Lilith. How can I assist you today?" }
+#     ]
+# }
+
+curl -X POST http://localhost:5000/api/v1/chat -H "Content-Type: application/json" -d '{"prompt": "Write me a poem about computers. In no more than 500 characters.","messages":[{"role":"user","content":"Hello, I am Mariocarter. Who are you?"},{"role":"assistant","content":"Good day. I am Lilith, a very good poet. How can I assist you today?"}]}'

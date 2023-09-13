@@ -19,6 +19,7 @@ cors(app)
 
 # Setup routes
 app.register_blueprint(index_route, url_prefix="/api")
+
 DebugRoutes(app)
 Version1Routes(app)
 
