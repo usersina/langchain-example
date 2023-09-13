@@ -4,6 +4,7 @@ from quart_cors import cors
 
 from routes.debug import DebugRoutes
 from routes.index import page as index_route
+from routes.v1 import Version1Routes
 
 # Load environment variables
 load_dotenv(
@@ -19,6 +20,7 @@ cors(app)
 # Setup routes
 app.register_blueprint(index_route, url_prefix="/api")
 DebugRoutes(app)
+Version1Routes(app)
 
 # Execute only if run as a script
 if __name__ == "__main__":
