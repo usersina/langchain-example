@@ -1,7 +1,6 @@
 import os
 from typing import TypedDict
 
-from flask import Blueprint, request
 from langchain.agents import create_sql_agent
 from langchain.agents.agent_toolkits import SQLDatabaseToolkit
 from langchain.agents.agent_types import AgentType
@@ -10,6 +9,7 @@ from langchain.chains import create_sql_query_chain
 from langchain.chat_models import ChatOpenAI
 from langchain.llms import OpenAI
 from langchain.utilities import SQLDatabase
+from quart import Blueprint, request
 
 from atypes.error import AppError
 
@@ -29,13 +29,13 @@ class Output(TypedDict):
 
 
 @page.route("/raw", methods=["POST"])
-def sqlRaw() -> Output | tuple[AppError, int]:
+async def sql_raw() -> Output | tuple[AppError, int]:
     """
     Given a prompt, generate a raw SQL query, execute it as is and return the results.
     The prompt should be a question that can be answered by the database.
     """
     try:
-        data: Input = request.get_json()
+        data: Input = await request.get_json()
         prompt = data["prompt"]
 
         db = SQLDatabase.from_uri("mysql://root:root@127.0.0.1:3316/retailer_db")
@@ -57,13 +57,13 @@ def sqlRaw() -> Output | tuple[AppError, int]:
 
 
 @page.route("/agent", methods=["POST"])
-def sqlAgent() -> Output | tuple[AppError, int]:
+async def sql_agent() -> Output | tuple[AppError, int]:
     """
     Given a prompt, make observations by generating, running and then returning the results of a SQL query.
     The prompt should be a question that can be answered by the database.
     """
     try:
-        data: Input = request.get_json()
+        data: Input = await request.get_json()
         prompt = data["prompt"]
 
         db = SQLDatabase.from_uri("mysql://root:root@127.0.0.1:3316/retailer_db")

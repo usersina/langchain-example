@@ -11,4 +11,4 @@ tasks:
 
   dev:
     desc: "Run the server with hot reload enabled"
-    cmd: flask --app src/main.py --debug run
+    cmd: quart --app src/main.py --debug run

@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
-from flask import Flask
-from flask_cors import CORS
+from quart import Quart
+from quart_cors import cors
 
 from routes.chat import page as chatRoute
 from routes.generate import page as generateRoute
@@ -12,11 +12,11 @@ load_dotenv(
     dotenv_path=".env",  # Relative to where the script gets executed
 )
 
-app = Flask(__name__)
+app = Quart(__name__)
 # See https://github.com/corydolphin/flask-cors/issues/257
 app.url_map.strict_slashes = False
 
-CORS(app)
+cors(app)
 
 app.register_blueprint(indexRoute, url_prefix="/api")
 app.register_blueprint(generateRoute, url_prefix="/api/generate")

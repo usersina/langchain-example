@@ -1,11 +1,11 @@
 import os
 from typing import TypedDict
 
-from flask import Blueprint, current_app, request
 from langchain.callbacks import get_openai_callback
 from langchain.chains import ConversationChain
 from langchain.llms import OpenAI
 from langchain.memory import ChatMessageHistory, ConversationSummaryBufferMemory
+from quart import Blueprint, current_app, request
 
 from atypes.error import AppError
 from atypes.message import Message
@@ -26,12 +26,12 @@ class Output(TypedDict):
 
 
 @page.route("/", methods=["POST"])
-def chat() -> Output | tuple[AppError, int]:
+async def chat() -> Output | tuple[AppError, int]:
     """
     Given a prompt and a list of messages, predict the next message. Or in other words, chat.
     """
     try:
-        data: Input = request.get_json()
+        data: Input = await request.get_json()
         temp_arg = request.args.get("temperature")
         top_p_arg = request.args.get("top_p")
         max_tokens_arg = request.args.get("max_tokens")

@@ -1,9 +1,9 @@
 import os
 from typing import TypedDict
 
-from flask import Blueprint, request
 from langchain.callbacks import get_openai_callback
 from langchain.llms import OpenAI
+from quart import Blueprint, request
 
 from atypes.error import AppError
 
@@ -22,12 +22,12 @@ class Output(TypedDict):
 
 
 @page.route("/", methods=["POST"])
-def generate() -> Output | tuple[AppError, int]:
+async def generate() -> Output | tuple[AppError, int]:
     """
     Given a prompt, generate some text.
     """
     try:
-        data: Input = request.get_json()
+        data: Input = await request.get_json()
         tempArg = request.args.get("temperature")
         top_pArg = request.args.get("top_p")
         max_tokensArg = request.args.get("max_tokens")
