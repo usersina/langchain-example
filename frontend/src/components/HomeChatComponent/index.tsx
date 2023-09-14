@@ -2,9 +2,11 @@ import React from 'react'
 import { Message } from '../../types/message'
 import MessageInput from '../ChatComponent/MessageInput'
 import MessageItem from '../ChatComponent/MessageItem'
+import MessageLoading from '../ChatComponent/MessageLoading'
 
 interface HomeChatComponentProps {
   messages: Message[]
+  loading: boolean
   handleSend: (message: string) => void
   bottomDivRef: React.RefObject<HTMLDivElement>
   //   tokens: number
@@ -12,6 +14,7 @@ interface HomeChatComponentProps {
 
 function HomeChatComponent({
   messages,
+  loading,
   handleSend,
   bottomDivRef, //   tokens,
 }: HomeChatComponentProps) {
@@ -27,6 +30,7 @@ function HomeChatComponent({
         {messages.map((message, index) => (
           <MessageItem key={index} message={message} />
         ))}
+        {loading && <MessageLoading />}
         <div ref={bottomDivRef} />
       </section>
 

@@ -3,7 +3,7 @@ import { Message } from '../../types/message'
 import { RadioValue } from '../../types/radio'
 import MessageInput from '../ChatComponent/MessageInput'
 import MessageItem from '../ChatComponent/MessageItem'
-import MessageLoading from './MessageLoading'
+import MessageLoading from '../ChatComponent/MessageLoading'
 import MessageRadio from './MessageRadio'
 
 interface DebugChatComponentProps {

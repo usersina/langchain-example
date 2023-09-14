@@ -1,5 +1,5 @@
+import { AXIOS_INSTANCE } from '.'
 import { Message } from '../types/message'
-import { AXIOS_INSTANCE } from './api'
 
 /**
  * Send a message to the chatbot API.

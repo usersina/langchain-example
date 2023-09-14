@@ -1,14 +1,13 @@
 import { useRef, useState } from 'react'
+import { chat, generate, sqlQueryAgent } from '../api/debug'
 import DebugChatComponent from '../components/DebugChatComponent'
-import { chat, generate, sqlQueryAgent } from '../services/debug-api'
 import { Message } from '../types/message'
 import { RadioValue } from '../types/radio'
 
 function ChatContainer() {
-  // Ref
   const bottomDivRef = useRef<HTMLDivElement>(null)
 
-  // State
+  // ======================= State ======================= //
   const [type, setType] = useState<RadioValue>('chatbot')
   const [loading, setLoading] = useState(false)
   const [tokens, setTokens] = useState(0)
@@ -21,7 +20,7 @@ function ChatContainer() {
     // },
   ])
 
-  // Handlers
+  // ======================= Handlers ======================= //
   const handleSend = async (message: string) => {
     setMessages((prev) => [...prev, { role: 'user', content: message.trim() }])
     setLoading(true)
@@ -68,7 +67,7 @@ function ChatContainer() {
     }
   }
 
-  // Render
+  // ======================= Render ======================= //
   return (
     <DebugChatComponent
       messages={messages}
