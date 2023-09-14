@@ -37,8 +37,11 @@ async def stream_text() -> tuple[AsyncGenerator[str, Any], dict[str, str]]:
 
 @page.route("/dummy", methods=["GET"])
 def stream_dummy():
+    chunks_amount_arg = request.args.get("chunks_amount")
+    chunks_amount = int(chunks_amount_arg) if chunks_amount_arg else 5000
+
     def generate_output():
-        for i in range(10000):
+        for _ in range(chunks_amount):
             yield generate_random_string(100)
             yield "\n===============================================\n"
 

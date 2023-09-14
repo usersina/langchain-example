@@ -31,14 +31,14 @@ async def generate() -> Output | tuple[AppError, int]:
     """
     try:
         data: Input = await request.get_json()
-        tempArg = request.args.get("temperature")
-        top_pArg = request.args.get("top_p")
-        max_tokensArg = request.args.get("max_tokens")
+        temp_arg = request.args.get("temperature")
+        top_p_arg = request.args.get("top_p")
+        max_tokens_arg = request.args.get("max_tokens")
 
         prompt = data["prompt"]
-        temperature: float = float(tempArg) if tempArg else 0.7
-        top_p: float = float(top_pArg) if top_pArg else 1
-        max_tokens: int = int(max_tokensArg) if max_tokensArg else 256
+        temperature: float = float(temp_arg) if temp_arg else 0.7
+        top_p: float = float(top_p_arg) if top_p_arg else 1
+        max_tokens: int = int(max_tokens_arg) if max_tokens_arg else 256
 
         with get_openai_callback() as cb:
             llm = OpenAI(temperature=temperature, top_p=top_p, max_tokens=max_tokens)

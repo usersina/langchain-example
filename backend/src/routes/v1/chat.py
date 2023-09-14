@@ -48,9 +48,9 @@ async def chat() -> Any | tuple[AppError, int]:
             #
             # with get_openai_callback() as cb:
             asyncio.create_task(conversation.apredict(input=prompt))
-            async for i in handler.aiter():
-                yield i
-            yield "[END]"
+            async for chunk in handler.aiter():
+                yield chunk
+            # yield "[END]"
             # yield str(cb.total_tokens)
 
         return ask_question_async(), {"Content-Type": "text/event-stream"}
