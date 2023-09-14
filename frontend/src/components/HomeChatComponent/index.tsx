@@ -3,9 +3,18 @@ import { Message } from '../../types/message'
 import MessageInput from '../ChatComponent/MessageInput'
 import MessageItem from '../ChatComponent/MessageItem'
 import MessageLoading from '../ChatComponent/MessageLoading'
+import TypeWriter from '../shared/TypeWriter'
 
 interface HomeChatComponentProps {
   messages: Message[]
+  /**
+   * The message that is being typed by the assistant in real-time.
+   */
+  typedMessage: string | null
+  /**
+   * Callback when a message finishes typing.
+   */
+  onMessageTyped: (message: string) => void
   loading: boolean
   handleSend: (message: string) => void
   bottomDivRef: React.RefObject<HTMLDivElement>
@@ -14,6 +23,8 @@ interface HomeChatComponentProps {
 
 function HomeChatComponent({
   messages,
+  typedMessage,
+  onMessageTyped,
   loading,
   handleSend,
   bottomDivRef, //   tokens,
@@ -31,11 +42,24 @@ function HomeChatComponent({
           <MessageItem key={index} message={message} />
         ))}
         {loading && <MessageLoading />}
+        {typedMessage && (
+          <TypeWriter
+            text={typedMessage}
+            delay={30}
+            onFinish={onMessageTyped}
+            wrapperClassName="cursor-not-allowed select-none w-fit"
+            className="p-2 text-black whitespace-pre-wrap bg-gray-200 rounded-lg"
+          />
+        )}
         <div ref={bottomDivRef} />
       </section>
 
       <section className="p-4 pt-0 pb-0">
-        <MessageInput onSend={handleSend} scrollTargetRef={bottomDivRef} />
+        <MessageInput
+          onSend={handleSend}
+          scrollTargetRef={bottomDivRef}
+          disabled={loading || !!typedMessage}
+        />
       </section>
 
       <section className="p-1 px-4 text-right">
