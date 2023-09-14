@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 interface MessageInputProps {
   /**
@@ -21,6 +21,7 @@ function MessageInput({
   disabled,
   scrollTargetRef,
 }: MessageInputProps) {
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
   const [input, setInput] = useState('')
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -40,6 +41,13 @@ function MessageInput({
     }
   }
 
+  // Automatically focus the textarea if it's enabled
+  useEffect(() => {
+    if (!disabled && textareaRef.current) {
+      textareaRef.current.focus()
+    }
+  }, [disabled])
+
   return (
     <>
       <label
@@ -50,6 +58,7 @@ function MessageInput({
       </label>
       <textarea
         id="message"
+        ref={textareaRef}
         rows={4}
         className="block resize-none p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 hover:ring-primary-500 hover:border-primary-500 focus:outline-2 transition duration-150 ease-in-out outline-primary-500 disabled:bg-gray-200 disabled:cursor-not-allowed"
         placeholder="Enter + Shift for a new line"
