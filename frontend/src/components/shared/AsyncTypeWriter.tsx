@@ -62,10 +62,12 @@ function AsyncTypeWriter({
   Wrapper,
 }: AsyncTypeWriterProps) {
   const scrollTargetRef = useRef<HTMLDivElement>(null)
+
   /**
    * This is a ref to ensure no endless loop is caused by the `useCallback` hook.
    */
   const onTypingEndRef = useRef(onTypingEnd)
+
   /**
    * This is a ref to ensure no endless loop is caused by the `useEffect` hook.
    */
@@ -75,6 +77,13 @@ function AsyncTypeWriter({
    * This is a ref to the timer that is used to determine if the stream is finished.
    */
   const abortTimerRef = useRef<number | null>(null)
+
+  /**
+   * This is a ref to the previous index. This is used to determine if the index has changed.
+   * Omitting this will cause some characters to be re-typed since the index might be the same if the `text` dependency
+   * was changed in the `useEffect` hook.
+   */
+  const prevIndexRef = useRef(-1)
 
   // The state representing the text that's being received from the stream
   const [text, setText] = useState('')
@@ -118,8 +127,17 @@ function AsyncTypeWriter({
     // If the current index is less than the text length, type the next character after a delay.
     if (currentIndex < text.length) {
       timeout = setTimeout(() => {
-        setCurrentText((prevText) => prevText + text[currentIndex])
+        // Index is the same, this was most likely caused by the `text` dependency update, skip
+        if (prevIndexRef.current === currentIndex) {
+          return
+        }
+
+        // Index updated, update the previous index ref
         setCurrentIndex((prevIndex) => prevIndex + 1)
+        prevIndexRef.current = currentIndex
+
+        // Type the next character
+        setCurrentText((prevText) => prevText + text[currentIndex])
 
         if (continuousScroll) {
           // TODO: Don't scroll if the user is scrolling manually
@@ -155,7 +173,7 @@ function AsyncTypeWriter({
 
   return (
     <>
-      {Wrapper ? <Wrapper text={currentText} /> : <span>{currentText}</span>}{' '}
+      {Wrapper ? <Wrapper text={currentText} /> : <span>{currentText}</span>}
       <div ref={scrollTargetRef} />
     </>
   )
