@@ -51,5 +51,5 @@ export const chatStream = async (
   if (response.status !== 200) throw new Error(response.status.toString())
   if (!response.body) throw new Error('Response body does not exist')
 
-  return getIterableStream(response.body, 200)
+  return getIterableStream(response.body)
 }
