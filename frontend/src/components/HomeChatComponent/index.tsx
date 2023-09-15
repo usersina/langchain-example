@@ -3,18 +3,12 @@ import { Message } from '../../types/message'
 import MessageInput from '../ChatComponent/MessageInput'
 import MessageItem from '../ChatComponent/MessageItem'
 import MessageLoading from '../ChatComponent/MessageLoading'
-import TypeWriter from '../shared/TypeWriter'
+import AsyncTypeWriter from '../shared/AsyncTypeWriter'
 
 interface HomeChatComponentProps {
   messages: Message[]
-  /**
-   * The message that is being typed by the assistant in real-time.
-   */
-  typedMessage: string | null
-  /**
-   * Callback when a message finishes typing.
-   */
-  onMessageTyped: (message: string) => void
+  stream: AsyncIterable<string> | null
+  handleTypingEnd: (message: string) => void
   loading: boolean
   handleSend: (message: string) => void
   bottomDivRef: React.RefObject<HTMLDivElement>
@@ -23,8 +17,8 @@ interface HomeChatComponentProps {
 
 function HomeChatComponent({
   messages,
-  typedMessage,
-  onMessageTyped,
+  stream,
+  handleTypingEnd,
   loading,
   handleSend,
   bottomDivRef, //   tokens,
@@ -42,13 +36,20 @@ function HomeChatComponent({
           <MessageItem key={index} message={message} />
         ))}
         {loading && <MessageLoading />}
-        {typedMessage && (
-          <TypeWriter
-            text={typedMessage}
+        {stream && (
+          <AsyncTypeWriter
+            stream={stream}
             delay={30}
-            onFinish={onMessageTyped}
-            wrapperClassName="cursor-not-allowed select-none w-fit"
-            className="p-2 text-black whitespace-pre-wrap bg-gray-200 rounded-lg"
+            onTypingEnd={handleTypingEnd}
+            Wrapper={({ text }) => (
+              <>
+                <div className="cursor-not-allowed select-none w-fit">
+                  <p className="p-2 text-black whitespace-pre-wrap bg-gray-200 rounded-lg">
+                    {text}
+                  </p>
+                </div>
+              </>
+            )}
           />
         )}
         <div ref={bottomDivRef} />
@@ -58,7 +59,7 @@ function HomeChatComponent({
         <MessageInput
           onSend={handleSend}
           scrollTargetRef={bottomDivRef}
-          disabled={loading || !!typedMessage}
+          disabled={loading || !!stream}
         />
       </section>
 

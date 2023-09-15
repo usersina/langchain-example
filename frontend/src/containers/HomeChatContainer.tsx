@@ -8,7 +8,7 @@ function HomeChatContainer() {
 
   // ======================= State ======================= //
   const [messages, setMessages] = useState<Message[]>([])
-  const [typedMessage, setTypedMessage] = useState<string | null>(null)
+  const [stream, setStream] = useState<AsyncIterable<string> | null>(null)
   const [loading, setLoading] = useState(false)
 
   // ======================= Handlers ======================= //
@@ -16,13 +16,13 @@ function HomeChatContainer() {
     setMessages((prev) => [...prev, { role: 'user', content: message.trim() }])
     setLoading(true)
     try {
-      const stream = await chatStream(message, messages)
+      const theStream = await chatStream(message, messages)
       setLoading(false) // stream is ready to be processed, stop loading
-
+      setStream(theStream)
       // For each chunk of data, set it to the typed state that will type it
-      for await (const chunk of stream) {
-        setTypedMessage((prev) => (prev ? prev + chunk : chunk) ?? null)
-      }
+      // for await (const chunk of stream) {
+      //   setTypedMessage((prev) => (prev ? prev + chunk : chunk) ?? null)
+      // }
     } catch (error) {
       setMessages((prev) => [
         ...prev,
@@ -41,15 +41,15 @@ function HomeChatContainer() {
    */
   const handleMessageTyped = (message: string) => {
     setMessages((prev) => [...prev, { role: 'assistant', content: message }])
-    setTypedMessage(null)
+    setStream(null)
   }
 
   // ======================= Render ======================= //
   return (
     <HomeChatComponent
       messages={messages}
-      typedMessage={typedMessage}
-      onMessageTyped={handleMessageTyped}
+      stream={stream}
+      handleTypingEnd={handleMessageTyped}
       loading={loading}
       bottomDivRef={bottomDivRef}
       handleSend={handleSend}

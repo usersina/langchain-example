@@ -1,13 +1,4 @@
 /**
- * Wait for a given number of milliseconds
- * @param ms The number of milliseconds to wait
- * @returns A promise that resolves after `ms` milliseconds
- */
-function wait(ms: number) {
-  return new Promise<void>((resolve) => setTimeout(resolve, ms))
-}
-
-/**
  * Get an async iterable stream from a `ReadableStream`.
  *
  * @param body The `ReadableStream` stream to iterate over.
@@ -23,9 +14,8 @@ function wait(ms: number) {
  * ```
  */
 export async function* getIterableStream(
-  body: ReadableStream<Uint8Array>,
+  body: ReadableStream<Uint8Array>
   //   timeout: number = 30000 // 30 seconds
-  delayMs: number = 0
 ): AsyncIterable<string> {
   const reader = body.getReader()
   const decoder = new TextDecoder()
@@ -36,9 +26,6 @@ export async function* getIterableStream(
       break
     }
     const decodedChunk = decoder.decode(value, { stream: true })
-    if (delayMs) {
-      await wait(delayMs)
-    }
     yield decodedChunk
   }
 }

@@ -52,7 +52,7 @@ function MessageInput({
     <>
       <label
         htmlFor="message"
-        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+        className="block mb-2 text-sm font-medium text-gray-900"
       >
         Your message or query
       </label>

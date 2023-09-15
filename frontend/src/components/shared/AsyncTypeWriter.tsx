@@ -1,21 +1,75 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
+
+interface WrapperProps {
+  /**
+   * The text that's being typed.
+   */
+  text: string
+}
 
 interface AsyncTypeWriterProps {
+  /**
+   * The stream to read and type from.
+   */
   stream: AsyncIterable<string>
   /**
-   * Callback when the stream ends.
+   * The delay between typing each character in milliseconds. Default is `20`.
    */
-  onEnd?: (message: string) => void
+  delay?: number
+  /**
+   * The time to wait before calling the `onEnd` callback in milliseconds. Default is `1000`.
+   * Increasing this value guarantees that slow streams will have enough time to finish typing.
+   */
+  abortDelay?: number
+  /**
+   * Callback for when the message finishes typing. Note that the stream can be closed before the message finishes typing.
+   */
+  onTypingEnd?: (message: string) => void
+  /**
+   * Callback for when the stream ends.
+   */
+  onStreamEnd?: (message: string) => void
+  /**
+   * Whether or not to continuously scroll to the bottom of the container as soon as text is typed. Default is `true`.
+   */
+  continuousScroll?: boolean
+  /**
+   * The wrapper element to wrap the typed text in. Default is `span`.
+   */
+  Wrapper?: React.ElementType<WrapperProps>
 }
 
 /**
- * A type writer that takes an async iterable and types it each time a new chunk is received.
+ * A component that types text from an async iterable stream character by character.
+ *
+ * It also handles slow streams by waiting for a bit before calling the optional `onEnd` callback.
+ *
+ * @example
+ * ```tsx
+ * <AsyncTypeWriter
+ *   stream={stream}
+ *   Wrapper={({ text }) => <p>{text}</p>}
+ * />
+ * ```
  */
-function AsyncTypeWriter({ stream, onEnd }: AsyncTypeWriterProps) {
+function AsyncTypeWriter({
+  stream,
+  delay = 20,
+  abortDelay = 1000,
+  onTypingEnd,
+  onStreamEnd,
+  continuousScroll = true,
+  Wrapper,
+}: AsyncTypeWriterProps) {
+  const scrollTargetRef = useRef<HTMLDivElement>(null)
   /**
    * This is a ref to ensure no endless loop is caused by the `useCallback` hook.
    */
-  const onEndRef = useRef(onEnd)
+  const onTypingEndRef = useRef(onTypingEnd)
+  /**
+   * This is a ref to ensure no endless loop is caused by the `useEffect` hook.
+   */
+  const onStreamEndRef = useRef(onStreamEnd)
 
   /**
    * This is a ref to the timer that is used to determine if the stream is finished.
@@ -35,10 +89,13 @@ function AsyncTypeWriter({ stream, onEnd }: AsyncTypeWriterProps) {
    */
   const populateTextRef = useCallback(async () => {
     console.debug('Reading the stream...')
+    let total = ''
     for await (const chunk of stream) {
+      total += chunk
       setText((prev) => prev + chunk)
     }
-    console.debug('Finished reading the stream.')
+    console.debug('Finished reading the stream. Calling onStreamEnd if any.')
+    onStreamEndRef.current && onStreamEndRef.current(total)
   }, [stream])
 
   /**
@@ -63,7 +120,12 @@ function AsyncTypeWriter({ stream, onEnd }: AsyncTypeWriterProps) {
       timeout = setTimeout(() => {
         setCurrentText((prevText) => prevText + text[currentIndex])
         setCurrentIndex((prevIndex) => prevIndex + 1)
-      }, 30)
+
+        if (continuousScroll) {
+          // TODO: Don't scroll if the user is scrolling manually
+          scrollTargetRef.current?.scrollIntoView({ behavior: 'instant' })
+        }
+      }, delay)
       return
     }
 
@@ -73,14 +135,13 @@ function AsyncTypeWriter({ stream, onEnd }: AsyncTypeWriterProps) {
     //
     // We wait for one second for the stream to receive any additional data.
     // If no additional data is received, then we are done typing.
-
     console.debug(
       'Cursor reached the text length. If no additional text is received within a second, we are done typing.'
     )
     abort = setTimeout(() => {
-      console.debug('Finished typing, calling onEnd if any.')
-      onEndRef.current && onEndRef.current(text)
-    }, 1000)
+      console.debug('Finished typing. Calling onTypingEndRef if any.')
+      onTypingEndRef.current && onTypingEndRef.current(text)
+    }, abortDelay)
 
     return () => {
       // Clear the timeout just in case we have one from the previous render.
@@ -88,13 +149,15 @@ function AsyncTypeWriter({ stream, onEnd }: AsyncTypeWriterProps) {
       // This guarantees that the abort timer is cleared as soon as the text or index is updated.
       if (abort) clearTimeout(abort)
     }
-  }, [text, currentIndex])
+
+    // relevant dependencies are the text and the index
+  }, [text, currentIndex, delay, abortDelay, continuousScroll])
 
   return (
-    <div>
-      <h1>AsyncTypeWriter</h1>
-      <p>{currentText}</p>
-    </div>
+    <>
+      {Wrapper ? <Wrapper text={currentText} /> : <span>{currentText}</span>}{' '}
+      <div ref={scrollTargetRef} />
+    </>
   )
 }
 
