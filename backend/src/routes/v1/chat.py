@@ -1,6 +1,7 @@
 import asyncio
+import json
 import os
-from typing import Any, AsyncGenerator, TypedDict
+from typing import Any, TypedDict
 
 from langchain import ConversationChain, OpenAI
 from langchain.callbacks import get_openai_callback
@@ -49,8 +50,7 @@ async def chat() -> Any | tuple[AppError, int]:
             # with get_openai_callback() as cb:
             asyncio.create_task(conversation.apredict(input=prompt))
             async for chunk in handler.aiter():
-                yield chunk
-            # yield "[END]"
+                yield json.dumps({"content": chunk, "tokens": 0}) + "\n"
             # yield str(cb.total_tokens)
 
         return ask_question_async(), {"Content-Type": "text/event-stream"}
