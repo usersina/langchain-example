@@ -45,7 +45,10 @@ Content-Type: application/json
 }
 
 ### GET /stream/dummy (not supported in rest client atm, see https://github.com/Huachao/vscode-restclient/issues/493)
-curl -X GET http://localhost:5000/api/debug/stream/dummy
+curl -X GET http://localhost:5000/api/debug/stream/dummy?chunks_amount=3000
+
+### GET /stream/dummy/json
+curl -X GET http://localhost:5000/api/debug/stream/dummy/json?chunks_amount=3000
 
 ### GET /stream/dummy/none
 curl -X GET http://localhost:5000/api/debug/stream/dummy/none
