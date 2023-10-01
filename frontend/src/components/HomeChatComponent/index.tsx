@@ -1,13 +1,14 @@
+import { AsyncTypewriter } from '@usersina/react-async-typewriter'
 import React from 'react'
+import { ChunkType } from '../../types/chunk'
 import { Message } from '../../types/message'
 import MessageInput from '../ChatComponent/MessageInput'
 import MessageItem from '../ChatComponent/MessageItem'
 import MessageLoading from '../ChatComponent/MessageLoading'
-import AsyncTypeWriter from '../shared/AsyncTypeWriter'
 
 interface HomeChatComponentProps {
   messages: Message[]
-  stream: AsyncIterable<string> | null
+  stream: AsyncIterable<ChunkType> | null
   handleTypingEnd: (message: string) => void
   loading: boolean
   handleSend: (message: string) => void
@@ -37,9 +38,10 @@ function HomeChatComponent({
         ))}
         {loading && <MessageLoading />}
         {stream && (
-          <AsyncTypeWriter
+          <AsyncTypewriter
             stream={stream}
             delay={30}
+            chunkAccessor="content"
             onTypingEnd={handleTypingEnd}
             Wrapper={({ text }) => (
               <>

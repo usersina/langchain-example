@@ -1,6 +1,7 @@
+import { getIterableStream } from '@usersina/react-async-typewriter'
 import { AXIOS_INSTANCE } from '.'
+import { ChunkType } from '../types/chunk'
 import { Message } from '../types/message'
-import { getIterableStream } from '../utils/streaming'
 
 /**
  * Send a message to the chatbot API and get the response as a stream.
@@ -19,7 +20,7 @@ import { getIterableStream } from '../utils/streaming'
 export const chatStream = async (
   prompt: string,
   history: Message[]
-): Promise<AsyncIterable<string>> => {
+): Promise<AsyncIterable<ChunkType>> => {
   const response = await fetch(
     AXIOS_INSTANCE.getUri({
       method: 'POST',
@@ -51,5 +52,8 @@ export const chatStream = async (
   if (response.status !== 200) throw new Error(response.status.toString())
   if (!response.body) throw new Error('Response body does not exist')
 
-  return getIterableStream(response.body)
+  return getIterableStream<ChunkType>(response.body, JSON.parse, {
+    splitRegExp: /(?<=})\n\ndata: (?={)/,
+    replaceRegExp: /^data: /,
+  })
 }

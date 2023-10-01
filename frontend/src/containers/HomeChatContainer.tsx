@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import { chatStream } from '../api/v1'
 import HomeChatComponent from '../components/HomeChatComponent'
+import { ChunkType } from '../types/chunk'
 import { Message } from '../types/message'
 
 function HomeChatContainer() {
@@ -8,7 +9,7 @@ function HomeChatContainer() {
 
   // ======================= State ======================= //
   const [messages, setMessages] = useState<Message[]>([])
-  const [stream, setStream] = useState<AsyncIterable<string> | null>(null)
+  const [stream, setStream] = useState<AsyncIterable<ChunkType> | null>(null)
   const [loading, setLoading] = useState(false)
 
   // ======================= Handlers ======================= //
