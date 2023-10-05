@@ -2,6 +2,8 @@
 
 A full end to end example that demonstrates how to create LLM enabled web application using the LangChain library.
 
+![alt](./media/app-example.gif)
+
 ## Software components
 
 - A [backend app](./backend/README.md) using [Quart](https://github.com/pallets/quart)
